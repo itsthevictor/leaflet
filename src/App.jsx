@@ -1,35 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useRef } from "react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import osm from "./osm-providers";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { useGeolocation } from "./helpers";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [center, setCenter] = useState({
+    lat: 45.6409743,
+    lng: 25.6315502,
+  });
+  const zoom = 14;
+  const mapRef = useRef();
+  const location = useGeolocation();
+  console.log(location.coordinates);
+  const coord = location.coordinates;
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="leaflet-container">
+      <MapContainer center={center} zoom={zoom} ref={mapRef}>
+        <TileLayer
+          url={osm.maptiler.url}
+          attribution={osm.maptiler.attribution}
+        />
+        <Marker position={center} />
+        <Marker position={location.coordinates} />
+      </MapContainer>
+    </div>
+  );
 }
 
-export default App
+export default App;
